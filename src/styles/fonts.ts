@@ -13,4 +13,6 @@ export const fontSize = {
   mediumPlus: 20,
   large: 22,
   extraLarge: 24,
+  xxLarge: 28,
+
 };

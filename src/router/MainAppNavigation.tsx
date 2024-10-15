@@ -2,13 +2,18 @@ import React from 'react';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {DefaultTheme, NavigationContainer} from '@react-navigation/native';
 import {AppRouts} from '.';
-import {HomeScreen, LoginScreen, RegistrationScreen} from '@/screens';
+import {
+  HomeScreen,
+  LoginScreen,
+  OnboardingScreen,
+  RegistrationScreen,
+} from '@/screens';
 import {AppStackParamsList} from '@/types/navigation';
 import {useMMKVBoolean} from 'react-native-mmkv';
 import {storageKeys} from '@/utils/constant';
 import {colors, fonts, fontSize} from '@/styles';
 import LinearGradient from 'react-native-linear-gradient';
-import {StyleSheet} from 'react-native';
+import {StyleSheet, View} from 'react-native';
 
 const renderHeaderBackground = () => {
   return (
@@ -44,6 +49,18 @@ const MainAppNavigation = () => {
           <AppStack.Screen name={AppRouts.Home} component={HomeScreen} />
         ) : (
           <AppStack.Group screenOptions={{title: 'Vet Seva'}}>
+            <AppStack.Screen
+              name={AppRouts.Onboarding}
+              component={OnboardingScreen}
+              options={{
+                headerShown: false,
+                statusBarStyle: 'dark',
+                statusBarColor: colors.neutral100,
+                headerShadowVisible: false,
+                headerBackground: null,
+              }}
+            />
+
             <AppStack.Screen name={AppRouts.Login} component={LoginScreen} />
             <AppStack.Screen
               name={AppRouts.Registration}

@@ -6,6 +6,7 @@ export type AppStackParamsList = {
   ResetPasswords: undefined;
   ChangePassword: undefined;
   Home: undefined;
+  Onboarding: undefined;
 };
 
 export type AppStackScreenProps<
