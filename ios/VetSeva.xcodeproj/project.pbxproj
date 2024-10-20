@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		001FD7252CA6782B00CF8442 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 001FD7242CA6782B00CF8442 /* GoogleService-Info.plist */; };
+		00ACAB462CC54AED006CDA72 /* File.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00ACAB452CC54AED006CDA72 /* File.swift */; };
 		00E356F31AD99517003FC87E /* VetSevaTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 00E356F21AD99517003FC87E /* VetSevaTests.m */; };
 		0B8E1CC54EEE44F591647360 /* Poppins-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = E7B24614A9BF4926943F431B /* Poppins-Regular.ttf */; };
 		13B07FBC1A68108700A75B9A /* AppDelegate.mm in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB01A68108700A75B9A /* AppDelegate.mm */; };
@@ -34,6 +35,8 @@
 
 /* Begin PBXFileReference section */
 		001FD7242CA6782B00CF8442 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
+		00ACAB442CC54AED006CDA72 /* VetSeva-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "VetSeva-Bridging-Header.h"; sourceTree = "<group>"; };
+		00ACAB452CC54AED006CDA72 /* File.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = File.swift; sourceTree = "<group>"; };
 		00E356EE1AD99517003FC87E /* VetSevaTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = VetSevaTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		00E356F11AD99517003FC87E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		00E356F21AD99517003FC87E /* VetSevaTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = VetSevaTests.m; sourceTree = "<group>"; };
@@ -142,6 +145,7 @@
 		83CBB9F61A601CBA00E9B192 = {
 			isa = PBXGroup;
 			children = (
+				00ACAB452CC54AED006CDA72 /* File.swift */,
 				001FD7242CA6782B00CF8442 /* GoogleService-Info.plist */,
 				13B07FAE1A68108700A75B9A /* VetSeva */,
 				832341AE1AAA6A7D00B99B32 /* Libraries */,
@@ -150,6 +154,7 @@
 				2D16E6871FA4F8E400B85C8A /* Frameworks */,
 				BBD78D7AC51CEA395F1C20DB /* Pods */,
 				285A94D9DE604AEE979A9F01 /* Resources */,
+				00ACAB442CC54AED006CDA72 /* VetSeva-Bridging-Header.h */,
 			);
 			indentWidth = 2;
 			sourceTree = "<group>";
@@ -235,7 +240,7 @@
 						TestTargetID = 13B07F861A680F5B00A75B9A;
 					};
 					13B07F861A680F5B00A75B9A = {
-						LastSwiftMigration = 1120;
+						LastSwiftMigration = 1540;
 					};
 				};
 			};
@@ -441,6 +446,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				13B07FBC1A68108700A75B9A /* AppDelegate.mm in Sources */,
+				00ACAB462CC54AED006CDA72 /* File.swift in Sources */,
 				13B07FC11A68108700A75B9A /* main.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -460,6 +466,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 5B7EB9410499542E8C5724F5 /* Pods-VetSeva-VetSevaTests.debug.xcconfig */;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"DEBUG=1",
@@ -487,6 +494,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 89C6BE57DB24E9ADA2F236DE /* Pods-VetSeva-VetSevaTests.release.xcconfig */;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				COPY_PHASE_STRIP = NO;
 				INFOPLIST_FILE = VetSevaTests/Info.plist;
@@ -531,6 +539,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.vetseva;
 				PRODUCT_NAME = VetSeva;
 				PROVISIONING_PROFILE_SPECIFIER = "";
+				SWIFT_OBJC_BRIDGING_HEADER = "VetSeva-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 				VERSIONING_SYSTEM = "apple-generic";
@@ -560,6 +569,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.vetseva;
 				PRODUCT_NAME = VetSeva;
 				PROVISIONING_PROFILE_SPECIFIER = "";
+				SWIFT_OBJC_BRIDGING_HEADER = "VetSeva-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
 				VERSIONING_SYSTEM = "apple-generic";
 			};
@@ -649,7 +659,10 @@
 					"-DFOLLY_CFG_NO_COROUTINES=1",
 					"-DFOLLY_HAVE_CLOCK_GETTIME=1",
 				);
-				OTHER_LDFLAGS = "$(inherited)  ";
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					" ",
+				);
 				REACT_NATIVE_PATH = "${PODS_ROOT}/../../node_modules/react-native";
 				SDKROOT = iphoneos;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) DEBUG";
@@ -733,7 +746,10 @@
 					"-DFOLLY_CFG_NO_COROUTINES=1",
 					"-DFOLLY_HAVE_CLOCK_GETTIME=1",
 				);
-				OTHER_LDFLAGS = "$(inherited)  ";
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					" ",
+				);
 				REACT_NATIVE_PATH = "${PODS_ROOT}/../../node_modules/react-native";
 				SDKROOT = iphoneos;
 				USE_HERMES = true;

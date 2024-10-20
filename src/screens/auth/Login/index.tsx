@@ -15,6 +15,11 @@ import {useAppTheme} from '@/hooks';
 import {useMMKVBoolean} from 'react-native-mmkv';
 import {storageKeys} from '@/utils/constant';
 import {AppRouts} from '@/router';
+import {useSafeAreaInsets} from 'react-native-safe-area-context';
+import {loginSchema} from '@/utils/validation';
+import {ZodError} from 'zod';
+import {zodErrorSimplify} from '@/utils/helper';
+import {KeyboardAwareScrollView} from 'react-native-keyboard-controller';
 
 const defaultValue = {
   email: '',
@@ -39,14 +44,23 @@ const LoginScreen = ({navigation}: AppStackScreenProps<'Login'>) => {
   const [errors, setErrors] = useState(defaultValue);
 
   const {t} = useTranslation('auth');
+  const {bottom} = useSafeAreaInsets();
   const inputRefs = useRef<Record<inputKeys, null | TextInput>>({
     email: null,
     password: null,
   });
 
   const handleSubmit = useCallback(() => {
-    setLoggedIn(true);
-  }, [setLoggedIn]);
+    try {
+      loginSchema.parse(inputs);
+      setLoggedIn(true);
+    } catch (error) {
+      if (error instanceof ZodError) {
+        const validationErrors = zodErrorSimplify<typeof defaultValue>(error);
+        setErrors(validationErrors);
+      }
+    }
+  }, [inputs, setLoggedIn]);
 
   const handleSubmitEditing = useCallback(
     (key: inputKeys) => {
@@ -60,7 +74,15 @@ const LoginScreen = ({navigation}: AppStackScreenProps<'Login'>) => {
   );
 
   return (
-    <View style={styles.container}>
+    <KeyboardAwareScrollView
+      bounces={false}
+      showsVerticalScrollIndicator={false}
+      overScrollMode="never"
+      keyboardShouldPersistTaps="handled"
+      bottomOffset={10}
+      contentContainerStyle={styles.content}
+      disableScrollOnKeyboardHide={true}
+      style={styles.container}>
       <WelcomeBackSvg height={218} style={styles.welcomeImg} />
       <Text style={[styles.title, {color: colors.text}]}>Welcome Back to</Text>
       <Text style={[styles.appName, {color: colors.tint}]}>Vet Seva</Text>
@@ -111,17 +133,22 @@ const LoginScreen = ({navigation}: AppStackScreenProps<'Login'>) => {
       <View style={styles.spacer} />
 
       <Pressable
+        hitSlop={{top: 10, bottom: 5}}
         onPress={() => {
           navigation.navigate(AppRouts.Registration);
         }}>
-        <Text style={[styles.footerText, {color: colors.text}]}>
+        <Text
+          style={[
+            styles.footerText,
+            {color: colors.text, marginBottom: bottom},
+          ]}>
           Don't have an account?{' '}
           <Text style={[styles.createAccountText, {color: colors.tint}]}>
             create new account.
           </Text>
         </Text>
       </Pressable>
-    </View>
+    </KeyboardAwareScrollView>
   );
 };
 

@@ -5,11 +5,14 @@ import {
   SafeAreaProvider,
   initialWindowMetrics,
 } from 'react-native-safe-area-context';
+import {KeyboardProvider} from 'react-native-keyboard-controller';
 
 const App = () => {
   return (
     <SafeAreaProvider initialMetrics={initialWindowMetrics}>
-      <MainApp />
+      <KeyboardProvider>
+        <MainApp />
+      </KeyboardProvider>
     </SafeAreaProvider>
   );
 };

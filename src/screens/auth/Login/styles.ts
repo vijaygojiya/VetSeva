@@ -2,6 +2,9 @@ import {fonts, fontSize, spacing} from '@/styles';
 import {StyleSheet} from 'react-native';
 
 const styles = StyleSheet.create({
+  content: {
+    flexGrow: 1,
+  },
   container: {
     flex: 1,
     paddingHorizontal: spacing.lg,
@@ -25,7 +28,6 @@ const styles = StyleSheet.create({
     fontFamily: fonts.regular,
     fontSize: fontSize.small,
     textAlign: 'center',
-    marginBottom: spacing.md,
   },
   createAccountText: {
     fontFamily: fonts.medium,

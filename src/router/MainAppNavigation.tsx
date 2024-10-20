@@ -13,7 +13,7 @@ import {useMMKVBoolean} from 'react-native-mmkv';
 import {storageKeys} from '@/utils/constant';
 import {colors, fonts, fontSize} from '@/styles';
 import LinearGradient from 'react-native-linear-gradient';
-import {StyleSheet, View} from 'react-native';
+import {StyleSheet} from 'react-native';
 
 const renderHeaderBackground = () => {
   return (
@@ -48,16 +48,15 @@ const MainAppNavigation = () => {
         {isLoggedIn ? (
           <AppStack.Screen name={AppRouts.Home} component={HomeScreen} />
         ) : (
-          <AppStack.Group screenOptions={{title: 'Vet Seva'}}>
+          <AppStack.Group>
             <AppStack.Screen
               name={AppRouts.Onboarding}
               component={OnboardingScreen}
               options={{
                 headerShown: false,
                 statusBarStyle: 'dark',
-                statusBarColor: colors.neutral100,
                 headerShadowVisible: false,
-                headerBackground: null,
+                headerBackground: undefined,
               }}
             />
 

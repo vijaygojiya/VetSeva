@@ -1,5 +1,5 @@
 import {
-  Animated,
+  // Animated,
   Dimensions,
   FlatList,
   NativeScrollEvent,
@@ -13,6 +13,9 @@ import React from 'react';
 import {useAppTheme} from '@/hooks';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {fonts, fontSize} from '@/styles';
+import {PlaceholderSvg} from '@/assets';
+import {AppStackScreenProps} from '@/types/navigation';
+import {AppRouts} from '@/router';
 const screenWidth = Dimensions.get('screen').width;
 
 const data = [
@@ -43,30 +46,35 @@ const data = [
   },
 ];
 
-const Onboarding = () => {
+const Onboarding = ({navigation}: AppStackScreenProps<'Onboarding'>) => {
   const [index, setIndex] = React.useState(0);
 
   const listRef = React.useRef<FlatList>(null);
-  const scrollX = React.useRef<Animated.AnimatedValue>(
-    new Animated.Value(0),
-  ).current;
+  // const scrollX = React.useRef<Animated.AnimatedValue>(
+  //   new Animated.Value(0),
+  // ).current;
 
   const {colors} = useAppTheme();
   const onMomentumScrollEndEvent = (
     e: NativeSyntheticEvent<NativeScrollEvent>,
   ) => setIndex(Math.round(e.nativeEvent.contentOffset.x / screenWidth));
 
-  const onScroll = Animated.event(
-    [{nativeEvent: {contentOffset: {x: scrollX}}}],
-    {useNativeDriver: true},
-  );
+  // const onScroll = Animated.event(
+  //   [{nativeEvent: {contentOffset: {x: scrollX}}}],
+  //   {useNativeDriver: true},
+  // );
 
   const onPressLeft = () => {
     listRef?.current?.scrollToOffset({
       offset: (index - 1) * screenWidth,
       animated: true,
     });
-    setIndex(curIndex => curIndex - 1);
+    setIndex(curIndex => {
+      if (curIndex > 0) {
+        return curIndex - 1;
+      }
+      return curIndex;
+    });
   };
 
   const onPressRight = () => {
@@ -74,12 +82,18 @@ const Onboarding = () => {
       offset: (index + 1) * screenWidth,
       animated: true,
     });
-    setIndex(curIndex => curIndex + 1);
+    setIndex(oldIndex => {
+      if (oldIndex === data.length - 1) {
+        navigation.replace(AppRouts.Login);
+        return oldIndex;
+      }
+      return oldIndex + 1;
+    });
   };
 
   return (
     <SafeAreaView
-      style={[styles.container, {backgroundColor: colors.background}]}>
+      style={[styles.container, {backgroundColor: colors.neutral100}]}>
       <FlatList
         ref={listRef}
         data={data}
@@ -94,13 +108,15 @@ const Onboarding = () => {
         renderItem={({item: {title, subTitle}}) => {
           return (
             <View
-              style={{
-                flex: 1,
-                justifyContent: 'center',
-                backgroundColor: colors.neutral100,
-                width: screenWidth,
-                rowGap: 8,
-              }}>
+              style={[
+                styles.itemContainer,
+                {backgroundColor: colors.neutral100},
+              ]}>
+              <PlaceholderSvg
+                style={styles.placeholderSvg}
+                height={screenWidth - 80}
+                width={screenWidth - 80}
+              />
               <Text style={[styles.title, {color: colors.text}]}>{title}</Text>
               <Text style={[styles.subTitle, {color: colors.neutral500}]}>
                 {subTitle}
@@ -109,34 +125,22 @@ const Onboarding = () => {
           );
         }}
       />
-      <View
-        style={{
-          flexDirection: 'row',
-          alignItems: 'center',
-          justifyContent: 'space-around',
-        }}>
+      <View style={styles.navigationContainer}>
         <Pressable
-          style={{
-            backgroundColor: 'red',
-            paddingHorizontal: 22,
-            paddingVertical: 8,
-            borderRadius: 8,
-          }}
+          style={[styles.button]}
           onPress={onPressLeft}
-          disabled={index === 0}
-          >
+          disabled={index === 0}>
           <Text>Previous</Text>
         </Pressable>
         <Pressable
-          style={{
-            backgroundColor: 'red',
-            paddingHorizontal: 22,
-            paddingVertical: 8,
-            borderRadius: 8,
-          }}
+          style={[
+            styles.button,
+            // index + 1 === data.length && styles.disabledButton,
+          ]}
           onPress={onPressRight}
-          disabled={index + 1 === data.length}>
-          <Text>Next</Text>
+          // disabled={index + 1 === data.length}
+        >
+          <Text>{index + 1 < data.length ? 'Next' : 'Start'}</Text>
         </Pressable>
       </View>
     </SafeAreaView>
@@ -154,11 +158,36 @@ const styles = StyleSheet.create({
     fontFamily: fonts.semiBold,
     marginHorizontal: 22,
     textAlign: 'center',
+    marginTop: 22,
   },
   subTitle: {
     fontSize: fontSize.small,
     fontFamily: fonts.regular,
     textAlign: 'center',
     marginHorizontal: 22,
+  },
+
+  itemContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    width: screenWidth,
+    alignItems: 'center',
+    rowGap: 6,
+  },
+  placeholderSvg: {
+    borderRadius: 8,
+    overflow: 'hidden',
+  },
+
+  navigationContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-around',
+  },
+  button: {
+    backgroundColor: 'red',
+    paddingHorizontal: 22,
+    paddingVertical: 8,
+    borderRadius: 8,
   },
 });

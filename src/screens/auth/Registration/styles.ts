@@ -2,10 +2,13 @@ import {fonts, fontSize, spacing} from '@/styles';
 import {StyleSheet} from 'react-native';
 
 const styles = StyleSheet.create({
+  content: {
+    flexGrow: 1,
+    paddingTop: spacing.md,
+  },
   container: {
     flex: 1,
     paddingHorizontal: spacing.lg,
-    paddingTop: spacing.md,
   },
   welcomeImg: {
     alignSelf: 'center',
@@ -22,7 +25,6 @@ const styles = StyleSheet.create({
     fontFamily: fonts.regular,
     fontSize: fontSize.small,
     textAlign: 'center',
-    marginBottom: spacing.md,
   },
   createAccountText: {
     fontFamily: fonts.medium,
