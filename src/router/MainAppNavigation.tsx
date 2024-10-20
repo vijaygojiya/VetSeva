@@ -9,11 +9,11 @@ import {
   RegistrationScreen,
 } from '@/screens';
 import {AppStackParamsList} from '@/types/navigation';
-import {useMMKVBoolean} from 'react-native-mmkv';
-import {storageKeys} from '@/utils/constant';
 import {colors, fonts, fontSize} from '@/styles';
 import LinearGradient from 'react-native-linear-gradient';
 import {StyleSheet} from 'react-native';
+import {useQuery} from '@tanstack/react-query';
+import {getCurrentUserInfo} from '@/services/firebase';
 
 const renderHeaderBackground = () => {
   return (
@@ -28,7 +28,13 @@ const renderHeaderBackground = () => {
 const AppStack = createNativeStackNavigator<AppStackParamsList>();
 
 const MainAppNavigation = () => {
-  const [isLoggedIn] = useMMKVBoolean(storageKeys.isLoggedIn);
+  const {data} = useQuery({
+    queryKey: ['userDetail'],
+    queryFn: async () => {
+      return getCurrentUserInfo();
+    },
+  });
+  const isLoggedIn = Boolean(data);
 
   return (
     <NavigationContainer

@@ -14,13 +14,12 @@ import {
 import styles from './styles';
 import {AppRouts} from '@/router';
 import {useAppTheme} from '@/hooks';
-import {storageKeys} from '@/utils/constant';
-import {useMMKVBoolean} from 'react-native-mmkv';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
-import {signupSchema} from '@/utils/validation';
 import {ZodError} from 'zod';
-import {zodErrorSimplify} from '@/utils/helper';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-controller';
+import {useMutation, useQueryClient} from '@tanstack/react-query';
+import {createUserInFirebase} from '@/services/firebase';
+import {signupSchema, zodErrorSimplify} from '@/utils';
 
 const defaultValue = {
   name: '',
@@ -39,8 +38,6 @@ const inputConfigs: inputKeys[] = Object.keys(defaultValue) as inputKeys[];
 
 const Registration = ({navigation}: AppStackScreenProps<'Registration'>) => {
   const {colors} = useAppTheme();
-  const [_, setLoggedIn] = useMMKVBoolean(storageKeys.isLoggedIn);
-
   const [isSecureTextEntry, setSecureTextEntry] = useState(true);
 
   const [inputs, setInputs] = useState(defaultValue);
@@ -53,18 +50,29 @@ const Registration = ({navigation}: AppStackScreenProps<'Registration'>) => {
     password: null,
     name: null,
   });
+  const queryClient = useQueryClient();
+
+  const {mutate, isPending} = useMutation({
+    mutationFn: createUserInFirebase,
+    onSuccess: () => {
+      queryClient.invalidateQueries({queryKey: ['userDetail']});
+    },
+    onError: e => {
+      console.log('error while sign in with firebase', e);
+    },
+  });
 
   const handleSubmit = useCallback(() => {
     try {
       signupSchema.parse(inputs);
-      setLoggedIn(true);
+      mutate(inputs);
     } catch (error) {
       if (error instanceof ZodError) {
         const validationErrors = zodErrorSimplify<typeof defaultValue>(error);
         setErrors(validationErrors);
       }
     }
-  }, [inputs, setLoggedIn]);
+  }, [inputs, mutate]);
 
   const handleSubmitEditing = useCallback(
     (key: inputKeys) => {
@@ -97,6 +105,7 @@ const Registration = ({navigation}: AppStackScreenProps<'Registration'>) => {
         const LeftIcon = LeftIcons[inputKey];
         return (
           <AppTextInput
+            editable={!isPending}
             key={`login-form-field-${index}`}
             ref={ref => {
               const temp = inputRefs.current;
@@ -133,7 +142,11 @@ const Registration = ({navigation}: AppStackScreenProps<'Registration'>) => {
           />
         );
       })}
-      <AppButton title="Create Account" onPress={handleSubmit} />
+      <AppButton
+        isLoading={isPending}
+        title="Create Account"
+        onPress={handleSubmit}
+      />
 
       <View style={styles.spacer} />
 

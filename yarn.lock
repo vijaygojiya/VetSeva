@@ -3820,6 +3820,55 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@tanstack/query-core@npm:5.59.13":
+  version: 5.59.13
+  resolution: "@tanstack/query-core@npm:5.59.13"
+  checksum: 2f43f53ecd0151c9f83f822f47a8c882cce234ece2fa4fc575ae1bf865094ff145f5efe7cb9c750541df143804941248aceaf85e7c5346a7897d896845996dff
+  languageName: node
+  linkType: hard
+
+"@tanstack/query-persist-client-core@npm:5.59.13":
+  version: 5.59.13
+  resolution: "@tanstack/query-persist-client-core@npm:5.59.13"
+  dependencies:
+    "@tanstack/query-core": 5.59.13
+  checksum: b0251fad4e74e94909f1eb195ad9cafbc65264aafed3f244bfbfcdaf5f4a48b66c6ed3e365eb0b12b43657553257cf9b029afd219ea432328359bcba7fe2bf53
+  languageName: node
+  linkType: hard
+
+"@tanstack/query-sync-storage-persister@npm:^5.59.13":
+  version: 5.59.13
+  resolution: "@tanstack/query-sync-storage-persister@npm:5.59.13"
+  dependencies:
+    "@tanstack/query-core": 5.59.13
+    "@tanstack/query-persist-client-core": 5.59.13
+  checksum: f9e7c3ba5ca32aa4272c7eea20b22fe172d171db4e2838b0c380b3da54ce3df466010943766c09340d21b83f4a2d1bb803afc158e8b86cee1ab680e22dbc82db
+  languageName: node
+  linkType: hard
+
+"@tanstack/react-query-persist-client@npm:^5.59.15":
+  version: 5.59.15
+  resolution: "@tanstack/react-query-persist-client@npm:5.59.15"
+  dependencies:
+    "@tanstack/query-persist-client-core": 5.59.13
+  peerDependencies:
+    "@tanstack/react-query": ^5.59.15
+    react: ^18 || ^19
+  checksum: 37db7cbd9564b6139fe8edf9cf722acaebea7f07230a672244123e0e72539445eba674d3760a79da5c23422873a93a6f5cf240327bb287f1e995a5b71401b80b
+  languageName: node
+  linkType: hard
+
+"@tanstack/react-query@npm:^5.59.15":
+  version: 5.59.15
+  resolution: "@tanstack/react-query@npm:5.59.15"
+  dependencies:
+    "@tanstack/query-core": 5.59.13
+  peerDependencies:
+    react: ^18 || ^19
+  checksum: 465aa2cdfc83fe3ebbb3dfe94ad39ac9e047e6808890b9dfd253d7aec31cdc46198af3c3a8dfa6a7212f941db7df1fe9a724540504cc2e3efa1cdffcb2d48164
+  languageName: node
+  linkType: hard
+
 "@trysound/sax@npm:0.2.0":
   version: 0.2.0
   resolution: "@trysound/sax@npm:0.2.0"
@@ -4213,6 +4262,9 @@ __metadata:
     "@react-navigation/bottom-tabs": ^6.6.1
     "@react-navigation/native": ^6.1.18
     "@react-navigation/native-stack": ^6.11.0
+    "@tanstack/query-sync-storage-persister": ^5.59.13
+    "@tanstack/react-query": ^5.59.15
+    "@tanstack/react-query-persist-client": ^5.59.15
     "@types/react": ^18.2.6
     "@types/react-test-renderer": ^18.0.0
     babel-jest: ^29.6.3

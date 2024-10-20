@@ -1,3 +1,1 @@
-export const storageKeys = {
-  isLoggedIn: 'isLoggedIn',
-};
+export const storageKeys = {};

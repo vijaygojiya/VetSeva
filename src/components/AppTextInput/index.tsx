@@ -42,6 +42,8 @@ const AppTextInput = forwardRef<TextInput, AppTextInputProps>(
         <View style={[styles.rowContainer, {borderColor: colors.border}]}>
           {leftIcon}
           <TextInput
+            autoCapitalize="none"
+            autoCorrect={false}
             ref={ref}
             placeholderTextColor={colors.neutral400}
             cursorColor={colors.tint}

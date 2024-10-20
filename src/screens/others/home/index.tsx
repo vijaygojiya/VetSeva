@@ -1,19 +1,27 @@
 import {Button, Text, View} from 'react-native';
 import React from 'react';
 import {AppStackScreenProps} from '@/types/navigation';
-import {storageKeys} from '@/utils/constant';
-import {useMMKVBoolean} from 'react-native-mmkv';
+import {getCurrentUserInfo, signOut} from '@/services/firebase';
+import {useQuery} from '@tanstack/react-query';
 
 const HomeScreen = ({}: AppStackScreenProps<'Home'>) => {
-  const [isLoggedIn, setLoggedIn] = useMMKVBoolean(storageKeys.isLoggedIn);
+  const {data, refetch} = useQuery({
+    queryKey: ['userDetail'],
+    queryFn: async () => {
+      return getCurrentUserInfo();
+    },
+    enabled: false,
+  });
 
   return (
     <View>
-      <Text>HomeScreen</Text>
+      <Text>{data?.displayName}</Text>
       <Button
         title="Loguot"
         onPress={() => {
-          setLoggedIn(false);
+          signOut().then(() => {
+            refetch();
+          });
         }}
       />
     </View>
