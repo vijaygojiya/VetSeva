@@ -1,1 +1,3 @@
-export const storageKeys = {};
+export const storageKeys = {
+  isGetStarted: 'isGetStarted',
+};

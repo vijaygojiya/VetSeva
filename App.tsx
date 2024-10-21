@@ -9,6 +9,8 @@ import {KeyboardProvider} from 'react-native-keyboard-controller';
 import {QueryClient} from '@tanstack/react-query';
 import {PersistQueryClientProvider} from '@tanstack/react-query-persist-client';
 import {clientPersister} from '@/utils';
+import {GestureHandlerRootView} from 'react-native-gesture-handler';
+import {Toaster} from 'sonner-native';
 
 const queryClient = new QueryClient();
 
@@ -17,11 +19,14 @@ const App = () => {
     <PersistQueryClientProvider
       persistOptions={{persister: clientPersister}}
       client={queryClient}>
-      <SafeAreaProvider initialMetrics={initialWindowMetrics}>
-        <KeyboardProvider>
-          <MainApp />
-        </KeyboardProvider>
-      </SafeAreaProvider>
+      <GestureHandlerRootView>
+        <SafeAreaProvider initialMetrics={initialWindowMetrics}>
+          <KeyboardProvider>
+            <MainApp />
+            <Toaster swipeToDismissDirection="left" />
+          </KeyboardProvider>
+        </SafeAreaProvider>
+      </GestureHandlerRootView>
     </PersistQueryClientProvider>
   );
 };

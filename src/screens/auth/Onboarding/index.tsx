@@ -1,22 +1,21 @@
-import {
-  // Animated,
-  Dimensions,
-  FlatList,
-  NativeScrollEvent,
-  NativeSyntheticEvent,
-  Pressable,
-  StyleSheet,
-  Text,
-  View,
-} from 'react-native';
+import {Dimensions, StyleSheet, Text, View} from 'react-native';
 import React from 'react';
 import {useAppTheme} from '@/hooks';
-import {SafeAreaView} from 'react-native-safe-area-context';
-import {fonts, fontSize} from '@/styles';
+import {SafeAreaView, useSafeAreaInsets} from 'react-native-safe-area-context';
+import {fonts, fontSize, spacing} from '@/styles';
 import {PlaceholderSvg} from '@/assets';
 import {AppStackScreenProps} from '@/types/navigation';
+import Animated, {
+  interpolate,
+  SharedValue,
+  useAnimatedRef,
+  useAnimatedStyle,
+  useScrollViewOffset,
+} from 'react-native-reanimated';
+import {AppButton} from '@/components';
 import {AppRouts} from '@/router';
-const screenWidth = Dimensions.get('screen').width;
+import {useMMKVBoolean} from 'react-native-mmkv';
+import {storageKeys} from '@/utils';
 
 const data = [
   {
@@ -45,69 +44,34 @@ const data = [
       'Read verified reviews from other users and choose vets with the highest ratings for peace of mind and quality care.',
   },
 ];
+const screenWidth = Dimensions.get('screen').width;
 
-const Onboarding = ({navigation}: AppStackScreenProps<'Onboarding'>) => {
-  const [index, setIndex] = React.useState(0);
-
-  const listRef = React.useRef<FlatList>(null);
-  // const scrollX = React.useRef<Animated.AnimatedValue>(
-  //   new Animated.Value(0),
-  // ).current;
+const Onboarding = ({}: AppStackScreenProps<'Onboarding'>) => {
+  const [_, setIsGetStarted] = useMMKVBoolean(storageKeys.isGetStarted);
+  const animatedRef = useAnimatedRef<Animated.ScrollView>();
+  const scrollOffset = useScrollViewOffset(animatedRef);
 
   const {colors} = useAppTheme();
-  const onMomentumScrollEndEvent = (
-    e: NativeSyntheticEvent<NativeScrollEvent>,
-  ) => setIndex(Math.round(e.nativeEvent.contentOffset.x / screenWidth));
 
-  // const onScroll = Animated.event(
-  //   [{nativeEvent: {contentOffset: {x: scrollX}}}],
-  //   {useNativeDriver: true},
-  // );
-
-  const onPressLeft = () => {
-    listRef?.current?.scrollToOffset({
-      offset: (index - 1) * screenWidth,
-      animated: true,
-    });
-    setIndex(curIndex => {
-      if (curIndex > 0) {
-        return curIndex - 1;
-      }
-      return curIndex;
-    });
-  };
-
-  const onPressRight = () => {
-    listRef?.current?.scrollToOffset({
-      offset: (index + 1) * screenWidth,
-      animated: true,
-    });
-    setIndex(oldIndex => {
-      if (oldIndex === data.length - 1) {
-        navigation.replace(AppRouts.Login);
-        return oldIndex;
-      }
-      return oldIndex + 1;
-    });
+  const handleGetStarted = () => {
+    setIsGetStarted(true);
   };
 
   return (
     <SafeAreaView
       style={[styles.container, {backgroundColor: colors.neutral100}]}>
-      <FlatList
-        ref={listRef}
-        data={data}
+      <Animated.ScrollView
+        ref={animatedRef}
         horizontal={true}
-        pagingEnabled={true}
         scrollEventThrottle={16}
-        overScrollMode="never"
-        bounces={false}
-        keyExtractor={(_, i) => `Onboard-item${i}`}
         showsHorizontalScrollIndicator={false}
-        onMomentumScrollEnd={onMomentumScrollEndEvent}
-        renderItem={({item: {title, subTitle}}) => {
+        decelerationRate="normal"
+        disableIntervalMomentum={true}
+        pagingEnabled={true}>
+        {data.map(({title, subTitle}, index) => {
           return (
             <View
+              key={`onboarding-page-${index}`}
               style={[
                 styles.itemContainer,
                 {backgroundColor: colors.neutral100},
@@ -121,34 +85,94 @@ const Onboarding = ({navigation}: AppStackScreenProps<'Onboarding'>) => {
               <Text style={[styles.subTitle, {color: colors.neutral500}]}>
                 {subTitle}
               </Text>
+              {index + 1 === data.length ? (
+                <AppButton
+                  containerStyle={styles.getStartedBtnContainer}
+                  onPress={handleGetStarted}
+                  title="Get Started"
+                />
+              ) : null}
             </View>
           );
-        }}
-      />
-      <View style={styles.navigationContainer}>
-        <Pressable
-          style={[styles.button]}
-          onPress={onPressLeft}
-          disabled={index === 0}>
-          <Text>Previous</Text>
-        </Pressable>
-        <Pressable
-          style={[
-            styles.button,
-            // index + 1 === data.length && styles.disabledButton,
-          ]}
-          onPress={onPressRight}
-          // disabled={index + 1 === data.length}
-        >
-          <Text>{index + 1 < data.length ? 'Next' : 'Start'}</Text>
-        </Pressable>
-      </View>
+        })}
+      </Animated.ScrollView>
+      <Indicators scrollOffset={scrollOffset} />
     </SafeAreaView>
   );
 };
 
 export default Onboarding;
 
+const Indicators = ({scrollOffset}: {scrollOffset: SharedValue<number>}) => {
+  const {bottom} = useSafeAreaInsets();
+  return (
+    <View
+      style={[
+        styles.indicatorContainer,
+        {
+          bottom: bottom + 28,
+        },
+      ]}>
+      {data.map((_, index) => {
+        return (
+          <Indicator
+            index={index}
+            scrollOffset={scrollOffset}
+            key={'indicator' + index}
+          />
+        );
+      })}
+    </View>
+  );
+};
+
+const size = 9;
+
+const Indicator = ({
+  scrollOffset,
+  index,
+}: {
+  scrollOffset: SharedValue<number>;
+  index: number;
+}) => {
+  const {colors} = useAppTheme();
+
+  const aniStyle = useAnimatedStyle(() => {
+    const inputRange = [index - 1, index, index + 1];
+    const outputRange = [-size, 0, size];
+    return {
+      transform: [
+        {
+          translateX: interpolate(
+            scrollOffset.value / screenWidth,
+            inputRange,
+            outputRange,
+          ),
+        },
+      ],
+    };
+  });
+
+  return (
+    <View
+      style={[
+        styles.dotCircle,
+        {
+          backgroundColor: colors.primary200,
+        },
+      ]}>
+      <Animated.View
+        style={[
+          styles.dotCircle,
+          aniStyle,
+          {
+            backgroundColor: colors.primary500,
+          },
+        ]}
+      />
+    </View>
+  );
+};
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -170,24 +194,30 @@ const styles = StyleSheet.create({
   itemContainer: {
     flex: 1,
     justifyContent: 'center',
-    width: screenWidth,
-    alignItems: 'center',
     rowGap: 6,
+    width: screenWidth,
   },
   placeholderSvg: {
     borderRadius: 8,
     overflow: 'hidden',
+    alignSelf: 'center',
   },
-
-  navigationContainer: {
-    flexDirection: 'row',
+  indicatorContainer: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
     alignItems: 'center',
-    justifyContent: 'space-around',
+    justifyContent: 'center',
+    columnGap: 4,
+    flexDirection: 'row',
   },
-  button: {
-    backgroundColor: 'red',
-    paddingHorizontal: 22,
-    paddingVertical: 8,
-    borderRadius: 8,
+  dotCircle: {
+    height: size,
+    width: size,
+    borderRadius: size / 2,
+    overflow: 'hidden',
+  },
+  getStartedBtnContainer: {
+    marginHorizontal: spacing.lg,
   },
 });

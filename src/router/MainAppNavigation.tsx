@@ -14,6 +14,8 @@ import LinearGradient from 'react-native-linear-gradient';
 import {StyleSheet} from 'react-native';
 import {useQuery} from '@tanstack/react-query';
 import {getCurrentUserInfo} from '@/services/firebase';
+import {useMMKVBoolean} from 'react-native-mmkv';
+import {storageKeys} from '@/utils';
 
 const renderHeaderBackground = () => {
   return (
@@ -28,13 +30,15 @@ const renderHeaderBackground = () => {
 const AppStack = createNativeStackNavigator<AppStackParamsList>();
 
 const MainAppNavigation = () => {
-  const {data} = useQuery({
+  const [isGetStarted] = useMMKVBoolean(storageKeys.isGetStarted);
+
+  const {data: isLoggedIn} = useQuery({
     queryKey: ['userDetail'],
     queryFn: async () => {
       return getCurrentUserInfo();
     },
+    select: Boolean,
   });
-  const isLoggedIn = Boolean(data);
 
   return (
     <NavigationContainer
@@ -55,22 +59,29 @@ const MainAppNavigation = () => {
           <AppStack.Screen name={AppRouts.Home} component={HomeScreen} />
         ) : (
           <AppStack.Group>
-            <AppStack.Screen
-              name={AppRouts.Onboarding}
-              component={OnboardingScreen}
-              options={{
-                headerShown: false,
-                statusBarStyle: 'dark',
-                headerShadowVisible: false,
-                headerBackground: undefined,
-              }}
-            />
-
-            <AppStack.Screen name={AppRouts.Login} component={LoginScreen} />
-            <AppStack.Screen
-              name={AppRouts.Registration}
-              component={RegistrationScreen}
-            />
+            {isGetStarted ? (
+              <>
+                <AppStack.Screen
+                  name={AppRouts.Login}
+                  component={LoginScreen}
+                />
+                <AppStack.Screen
+                  name={AppRouts.Registration}
+                  component={RegistrationScreen}
+                />
+              </>
+            ) : (
+              <AppStack.Screen
+                name={AppRouts.Onboarding}
+                component={OnboardingScreen}
+                options={{
+                  headerShown: false,
+                  statusBarStyle: 'dark',
+                  headerShadowVisible: false,
+                  headerBackground: undefined,
+                }}
+              />
+            )}
           </AppStack.Group>
         )}
       </AppStack.Navigator>

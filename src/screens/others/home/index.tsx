@@ -17,7 +17,7 @@ const HomeScreen = ({}: AppStackScreenProps<'Home'>) => {
     <View>
       <Text>{data?.displayName}</Text>
       <Button
-        title="Loguot"
+        title="Logout"
         onPress={() => {
           signOut().then(() => {
             refetch();

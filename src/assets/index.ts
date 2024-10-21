@@ -6,3 +6,4 @@ export {default as WelcomeBackSvg} from './svgs/welcome-back.svg';
 export {default as UserSvg} from './svgs/user.svg';
 export {default as WelcomeSvg} from './svgs/welcome.svg';
 export {default as PlaceholderSvg} from './svgs/placeholder.svg';
+export {default as ChevronSvg} from './svgs/chevron.svg';
