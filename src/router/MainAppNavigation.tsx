@@ -2,12 +2,7 @@ import React from 'react';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {DefaultTheme, NavigationContainer} from '@react-navigation/native';
 import {AppRouts} from '.';
-import {
-  HomeScreen,
-  LoginScreen,
-  OnboardingScreen,
-  RegistrationScreen,
-} from '@/screens';
+import {LoginScreen, OnboardingScreen, RegistrationScreen} from '@/screens';
 import {AppStackParamsList} from '@/types/navigation';
 import {colors, fonts, fontSize} from '@/styles';
 import LinearGradient from 'react-native-linear-gradient';
@@ -16,8 +11,9 @@ import {useQuery} from '@tanstack/react-query';
 import {getCurrentUserInfo} from '@/services/firebase';
 import {useMMKVBoolean} from 'react-native-mmkv';
 import {storageKeys} from '@/utils';
+import TabNavigator from './TabNavigator';
 
-const renderHeaderBackground = () => {
+export const renderHeaderBackground = () => {
   return (
     <LinearGradient
       useAngle={true}
@@ -56,7 +52,14 @@ const MainAppNavigation = () => {
           headerBackground: renderHeaderBackground,
         }}>
         {isLoggedIn ? (
-          <AppStack.Screen name={AppRouts.Home} component={HomeScreen} />
+          <AppStack.Screen
+            name={AppRouts.Tab}
+            component={TabNavigator}
+            options={{
+              headerShown: false,
+              headerBackground: undefined,
+            }}
+          />
         ) : (
           <AppStack.Group>
             {isGetStarted ? (

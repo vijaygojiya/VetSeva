@@ -18,7 +18,8 @@ import {ZodError} from 'zod';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-controller';
 import {useMutation, useQueryClient} from '@tanstack/react-query';
 import {signInUserWithFirebase} from '@/services/firebase';
-import {loginSchema, zodErrorSimplify} from '@/utils';
+import {authErrorRegex, loginSchema, zodErrorSimplify} from '@/utils';
+import {toast} from 'sonner-native';
 
 const defaultValue = {
   email: '',
@@ -53,8 +54,13 @@ const LoginScreen = ({navigation}: AppStackScreenProps<'Login'>) => {
     onSuccess: () => {
       queryClient.invalidateQueries({queryKey: ['userDetail']});
     },
-    onError: e => {
-      console.log('error while sign in with firebase', e);
+    onError: error => {
+      if (authErrorRegex.test(error.message)) {
+        const message = error.message.split(authErrorRegex)[1];
+        toast.error(message.trim());
+      } else {
+        toast.error('Something went wrong!');
+      }
     },
   });
 

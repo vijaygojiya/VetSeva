@@ -12,7 +12,6 @@ const createUserInFirebase = async ({
   password: string;
 }) => {
   const {user} = await fireAuth.createUserWithEmailAndPassword(email, password);
-  
   return user.updateProfile({displayName: name});
 };
 

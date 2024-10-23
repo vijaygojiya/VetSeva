@@ -1,10 +1,10 @@
 import {Button, Text, View} from 'react-native';
 import React from 'react';
-import {AppStackScreenProps} from '@/types/navigation';
+import {TabScreensProps} from '@/types/navigation';
 import {getCurrentUserInfo, signOut} from '@/services/firebase';
 import {useQuery} from '@tanstack/react-query';
 
-const HomeScreen = ({}: AppStackScreenProps<'Home'>) => {
+const AppointmentsScreen = ({}: TabScreensProps<'Appointments'>) => {
   const {data, refetch} = useQuery({
     queryKey: ['userDetail'],
     queryFn: async () => {
@@ -28,4 +28,4 @@ const HomeScreen = ({}: AppStackScreenProps<'Home'>) => {
   );
 };
 
-export default HomeScreen;
+export default AppointmentsScreen;
