@@ -1,5 +1,5 @@
 import {Pressable, Text, TextInput, View} from 'react-native';
-import React, {useCallback, useRef, useState} from 'react';
+import React, {useCallback, useMemo, useRef, useState} from 'react';
 import {AppStackScreenProps} from '@/types/navigation';
 import {useTranslation} from 'react-i18next';
 import {AppButton, AppTextInput} from '@/components';
@@ -14,7 +14,7 @@ import {
 import styles from './styles';
 import {AppRouts} from '@/router';
 import {useAppTheme} from '@/hooks';
-import {useSafeAreaInsets} from 'react-native-safe-area-context';
+import {SafeAreaView, useSafeAreaInsets} from 'react-native-safe-area-context';
 import {ZodError} from 'zod';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-controller';
 import {useMutation, useQueryClient} from '@tanstack/react-query';
@@ -46,6 +46,10 @@ const Registration = ({navigation}: AppStackScreenProps<'Registration'>) => {
 
   const {t} = useTranslation('auth');
   const {bottom} = useSafeAreaInsets();
+
+  const bottomSpace = useMemo(() => {
+    return Math.max(bottom, 8);
+  }, [bottom]);
   const inputRefs = useRef<Record<inputKeys, null | TextInput>>({
     email: null,
     password: null,
@@ -93,86 +97,90 @@ const Registration = ({navigation}: AppStackScreenProps<'Registration'>) => {
     [handleSubmit],
   );
   return (
-    <KeyboardAwareScrollView
-      bounces={false}
-      showsVerticalScrollIndicator={false}
-      overScrollMode="never"
-      keyboardShouldPersistTaps="handled"
-      bottomOffset={10}
-      contentContainerStyle={styles.content}
-      disableScrollOnKeyboardHide={true}
-      style={styles.container}>
-      <WelcomeSvg height={128} style={styles.welcomeImg} />
-      <Text style={[styles.title, {color: colors.text}]}>
-        Create new Account
-      </Text>
-      {inputConfigs.map((inputKey, index) => {
-        const isPassword = inputKey === 'password';
-        const LeftIcon = LeftIcons[inputKey];
-        return (
-          <AppTextInput
-            editable={!isPending}
-            key={`login-form-field-${index}`}
-            ref={ref => {
-              const temp = inputRefs.current;
-              inputRefs.current = {...temp, [inputKey]: ref};
-            }}
-            value={inputs[inputKey]}
-            returnKeyType={index + 1 === inputConfigs.length ? 'done' : 'next'}
-            onSubmitEditing={() => {
-              handleSubmitEditing(inputKey);
-            }}
-            error={errors[inputKey]}
-            onChangeText={text => {
-              setInputs(prev => ({...prev, [inputKey]: text}));
-              setErrors(prev => ({...prev, [inputKey]: ''}));
-            }}
-            leftIcon={<LeftIcon />}
-            rightIcon={
-              isPassword ? (
-                isSecureTextEntry ? (
-                  <EyeClosedSvg />
-                ) : (
-                  <EyeOpenSvg />
-                )
-              ) : null
-            }
-            secureTextEntry={isPassword && isSecureTextEntry}
-            label={t(`labels.${inputKey}`)}
-            placeholder={t(`placeholders.${inputKey}`)}
-            onRightIconPress={() => {
-              if (isPassword) {
-                setSecureTextEntry(v => !v);
-              }
-            }}
-          />
-        );
-      })}
-      <AppButton
-        isLoading={isPending}
-        title="Create Account"
-        onPress={handleSubmit}
-      />
-
-      <View style={styles.spacer} />
-
-      <Pressable
-        hitSlop={{top: 10, bottom: 5}}
-        onPress={() => {
-          navigation.navigate(AppRouts.Login);
-        }}>
-        <Text
-          style={[
-            styles.footerText,
-            {color: colors.text, marginBottom: bottom},
-          ]}>
-          Already have an account?{' '}
-          <Text style={[styles.createAccountText, {color: colors.tint}]}>
-            Login.
-          </Text>
+    <SafeAreaView
+      style={[styles.container, {backgroundColor: colors.neutral100}]}>
+      <KeyboardAwareScrollView
+        bounces={false}
+        showsVerticalScrollIndicator={false}
+        overScrollMode="never"
+        keyboardShouldPersistTaps="handled"
+        bottomOffset={10}
+        contentContainerStyle={styles.content}
+        disableScrollOnKeyboardHide={true}>
+        <WelcomeSvg height={128} style={styles.welcomeImg} />
+        <Text style={[styles.title, {color: colors.text}]}>
+          Create new Account
         </Text>
-      </Pressable>
-    </KeyboardAwareScrollView>
+        {inputConfigs.map((inputKey, index) => {
+          const isPassword = inputKey === 'password';
+          const LeftIcon = LeftIcons[inputKey];
+          return (
+            <AppTextInput
+              editable={!isPending}
+              key={`login-form-field-${index}`}
+              ref={ref => {
+                const temp = inputRefs.current;
+                inputRefs.current = {...temp, [inputKey]: ref};
+              }}
+              value={inputs[inputKey]}
+              returnKeyType={
+                index + 1 === inputConfigs.length ? 'done' : 'next'
+              }
+              onSubmitEditing={() => {
+                handleSubmitEditing(inputKey);
+              }}
+              error={errors[inputKey]}
+              onChangeText={text => {
+                setInputs(prev => ({...prev, [inputKey]: text}));
+                setErrors(prev => ({...prev, [inputKey]: ''}));
+              }}
+              leftIcon={<LeftIcon />}
+              rightIcon={
+                isPassword ? (
+                  isSecureTextEntry ? (
+                    <EyeClosedSvg />
+                  ) : (
+                    <EyeOpenSvg />
+                  )
+                ) : null
+              }
+              secureTextEntry={isPassword && isSecureTextEntry}
+              label={t(`labels.${inputKey}`)}
+              placeholder={t(`placeholders.${inputKey}`)}
+              onRightIconPress={() => {
+                if (isPassword) {
+                  setSecureTextEntry(v => !v);
+                }
+              }}
+            />
+          );
+        })}
+        <AppButton
+          isLoading={isPending}
+          title="Create Account"
+          onPress={handleSubmit}
+        />
+
+        <View style={styles.spacer} />
+
+        <Pressable
+          hitSlop={{top: 10, bottom: 5}}
+          onPress={() => {
+            navigation.navigate(AppRouts.Login);
+          }}>
+          <Text
+            style={[
+              styles.footerText,
+              {color: colors.text, marginBottom: bottomSpace},
+            ]}>
+            Already have an account?{' '}
+            <Text style={[styles.createAccountText, {color: colors.tint}]}>
+              Login.
+            </Text>
+          </Text>
+        </Pressable>
+      </KeyboardAwareScrollView>
+    </SafeAreaView>
   );
 };
 

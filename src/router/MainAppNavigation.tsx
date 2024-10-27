@@ -4,25 +4,13 @@ import {DefaultTheme, NavigationContainer} from '@react-navigation/native';
 import {AppRouts} from '.';
 import {LoginScreen, OnboardingScreen, RegistrationScreen} from '@/screens';
 import {AppStackParamsList} from '@/types/navigation';
-import {colors, fonts, fontSize} from '@/styles';
-import LinearGradient from 'react-native-linear-gradient';
-import {StyleSheet} from 'react-native';
+import {colors} from '@/styles';
 import {useQuery} from '@tanstack/react-query';
 import {getCurrentUserInfo} from '@/services/firebase';
 import {useMMKVBoolean} from 'react-native-mmkv';
 import {storageKeys} from '@/utils';
 import TabNavigator from './TabNavigator';
 
-export const renderHeaderBackground = () => {
-  return (
-    <LinearGradient
-      useAngle={true}
-      angle={55}
-      style={styles.gradientBg}
-      colors={[colors.primary600, colors.primary300]}
-    />
-  );
-};
 const AppStack = createNativeStackNavigator<AppStackParamsList>();
 
 const MainAppNavigation = () => {
@@ -41,25 +29,13 @@ const MainAppNavigation = () => {
       theme={{...DefaultTheme, colors: {...DefaultTheme.colors, ...colors}}}>
       <AppStack.Navigator
         screenOptions={{
-          animation: 'ios',
-          headerShadowVisible: false,
-          statusBarStyle: 'light',
-          statusBarTranslucent: true,
-          headerTintColor: colors.neutral100,
-          statusBarColor: colors.transparent,
-          headerTitleStyle: styles.headerTitle,
-          headerTitleAlign: 'center',
-          headerBackground: renderHeaderBackground,
+          // animation: 'ios',
+          statusBarStyle: 'dark',
+          statusBarColor: colors.neutral100,
+          headerShown: false,
         }}>
         {isLoggedIn ? (
-          <AppStack.Screen
-            name={AppRouts.Tab}
-            component={TabNavigator}
-            options={{
-              headerShown: false,
-              headerBackground: undefined,
-            }}
-          />
+          <AppStack.Screen name={AppRouts.Tab} component={TabNavigator} />
         ) : (
           <AppStack.Group>
             {isGetStarted ? (
@@ -77,12 +53,6 @@ const MainAppNavigation = () => {
               <AppStack.Screen
                 name={AppRouts.Onboarding}
                 component={OnboardingScreen}
-                options={{
-                  headerShown: false,
-                  statusBarStyle: 'dark',
-                  headerShadowVisible: false,
-                  headerBackground: undefined,
-                }}
               />
             )}
           </AppStack.Group>
@@ -93,11 +63,3 @@ const MainAppNavigation = () => {
 };
 
 export default MainAppNavigation;
-
-const styles = StyleSheet.create({
-  headerTitle: {
-    fontFamily: fonts.medium,
-    fontSize: fontSize.medium,
-  },
-  gradientBg: {flex: 1, backgroundColor: colors.background},
-});

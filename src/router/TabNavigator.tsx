@@ -8,7 +8,6 @@ import {
   ProfileScreen,
 } from '@/screens';
 import {TabParamsList} from '@/types/navigation';
-import {renderHeaderBackground} from './MainAppNavigation';
 import {useAppTheme} from '@/hooks';
 import {StyleSheet} from 'react-native';
 import {fonts, fontSize} from '@/styles';
@@ -80,11 +79,8 @@ export default function TabNavigator() {
   return (
     <Tab.Navigator
       screenOptions={{
-        headerBackground: renderHeaderBackground,
-        headerShadowVisible: false,
-        headerTitleStyle: [styles.headerTitle, {color: colors.neutral100}],
+        headerShown: false,
         tabBarLabelStyle: styles.tabBarLabel,
-        headerTitleAlign: 'center',
         tabBarShowLabel: false,
         tabBarActiveTintColor: colors.primary500,
       }}>
