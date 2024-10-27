@@ -13,7 +13,6 @@ import Animated, {
   useScrollViewOffset,
 } from 'react-native-reanimated';
 import {AppButton} from '@/components';
-import {AppRouts} from '@/router';
 import {useMMKVBoolean} from 'react-native-mmkv';
 import {storageKeys} from '@/utils';
 
@@ -193,7 +192,7 @@ const styles = StyleSheet.create({
 
   itemContainer: {
     flex: 1,
-    justifyContent: 'center',
+    paddingTop: spacing.xxxl,
     rowGap: 6,
     width: screenWidth,
   },

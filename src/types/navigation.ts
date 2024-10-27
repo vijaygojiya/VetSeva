@@ -14,6 +14,7 @@ export type TabParamsList = {
 };
 
 export type AppStackParamsList = {
+  Loading: undefined;
   Login: undefined;
   Registration: undefined;
   ResetPasswords: undefined;
