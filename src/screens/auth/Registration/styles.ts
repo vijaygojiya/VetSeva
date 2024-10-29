@@ -25,6 +25,7 @@ const styles = StyleSheet.create({
     fontFamily: fonts.regular,
     fontSize: fontSize.small,
     textAlign: 'center',
+    marginBottom: spacing.sm,
   },
   createAccountText: {
     fontFamily: fonts.medium,

@@ -12,4 +12,5 @@ export {default as ExploreSvg} from './svgs/explore.svg';
 export {default as SearchSvg} from './svgs/search.svg';
 export {default as CalendarClockSvg} from './svgs/calendar-clock.svg';
 export {default as BellSvg} from './svgs/bell.svg';
-
+export {default as StartSvg} from './svgs/star.svg';
+export {default as ShieldCrossSvg} from './svgs/shield-cross.svg';

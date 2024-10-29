@@ -15,6 +15,7 @@ import {getCurrentUserInfo} from '@/services/firebase';
 import {useMMKVBoolean} from 'react-native-mmkv';
 import {storage, storageKeys} from '@/utils';
 import TabNavigator from './TabNavigator';
+import Routes from './router';
 
 const AppStack = createNativeStackNavigator<AppStackParamsList>();
 
@@ -32,36 +33,38 @@ const MainAppNavigation = () => {
 
   return (
     <NavigationContainer
-      theme={{...DefaultTheme, colors: {...DefaultTheme.colors, ...colors}}}>
+      theme={{
+        ...DefaultTheme,
+        colors: {...DefaultTheme.colors, ...colors},
+      }}>
       <AppStack.Navigator
         screenOptions={{
           statusBarStyle: 'dark',
           statusBarColor: colors.neutral100,
           headerShown: false,
-        }}>
+        }}
+        initialRouteName={
+          isLoggedIn
+            ? Routes.Tab
+            : isGetStarted
+            ? Routes.Login
+            : Routes.Onboarding
+        }>
         {isRestoring ? (
           <AppStack.Screen name={AppRouts.Loading} component={LoadingScreen} />
         ) : isLoggedIn ? (
           <AppStack.Screen name={AppRouts.Tab} component={TabNavigator} />
         ) : (
           <AppStack.Group>
-            {isGetStarted ? (
-              <>
-                <AppStack.Screen
-                  name={AppRouts.Login}
-                  component={LoginScreen}
-                />
-                <AppStack.Screen
-                  name={AppRouts.Registration}
-                  component={RegistrationScreen}
-                />
-              </>
-            ) : (
-              <AppStack.Screen
-                name={AppRouts.Onboarding}
-                component={OnboardingScreen}
-              />
-            )}
+            <AppStack.Screen
+              name={AppRouts.Onboarding}
+              component={OnboardingScreen}
+            />
+            <AppStack.Screen name={AppRouts.Login} component={LoginScreen} />
+            <AppStack.Screen
+              name={AppRouts.Registration}
+              component={RegistrationScreen}
+            />
           </AppStack.Group>
         )}
       </AppStack.Navigator>

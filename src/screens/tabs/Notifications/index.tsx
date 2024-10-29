@@ -14,7 +14,7 @@ const NotificationScreen = ({}: TabScreensProps<'Notifications'>) => {
   });
 
   return (
-    <View>
+    <View style={{flex: 1, justifyContent: 'center'}}>
       <Text>{data?.displayName}</Text>
       <Button
         title="Logout"

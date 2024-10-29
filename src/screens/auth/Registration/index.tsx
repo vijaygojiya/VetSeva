@@ -1,5 +1,5 @@
 import {Pressable, Text, TextInput, View} from 'react-native';
-import React, {useCallback, useMemo, useRef, useState} from 'react';
+import React, {useCallback, useRef, useState} from 'react';
 import {AppStackScreenProps} from '@/types/navigation';
 import {useTranslation} from 'react-i18next';
 import {AppButton, AppTextInput} from '@/components';
@@ -14,12 +14,18 @@ import {
 import styles from './styles';
 import {AppRouts} from '@/router';
 import {useAppTheme} from '@/hooks';
-import {SafeAreaView, useSafeAreaInsets} from 'react-native-safe-area-context';
+import {SafeAreaView} from 'react-native-safe-area-context';
 import {ZodError} from 'zod';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-controller';
 import {useMutation, useQueryClient} from '@tanstack/react-query';
 import {createUserInFirebase} from '@/services/firebase';
-import {authErrorRegex, signupSchema, zodErrorSimplify} from '@/utils';
+import {
+  authErrorRegex,
+  signupSchema,
+  storage,
+  storageKeys,
+  zodErrorSimplify,
+} from '@/utils';
 import {toast} from 'sonner-native';
 
 const defaultValue = {
@@ -45,11 +51,7 @@ const Registration = ({navigation}: AppStackScreenProps<'Registration'>) => {
   const [errors, setErrors] = useState(defaultValue);
 
   const {t} = useTranslation('auth');
-  const {bottom} = useSafeAreaInsets();
 
-  const bottomSpace = useMemo(() => {
-    return Math.max(bottom, 8);
-  }, [bottom]);
   const inputRefs = useRef<Record<inputKeys, null | TextInput>>({
     email: null,
     password: null,
@@ -60,6 +62,7 @@ const Registration = ({navigation}: AppStackScreenProps<'Registration'>) => {
   const {mutate, isPending} = useMutation({
     mutationFn: createUserInFirebase,
     onSuccess: () => {
+      storage.set(storageKeys.isGetStarted, true);
       queryClient.invalidateQueries({queryKey: ['userDetail']});
     },
     onError: error => {
@@ -104,7 +107,7 @@ const Registration = ({navigation}: AppStackScreenProps<'Registration'>) => {
         showsVerticalScrollIndicator={false}
         overScrollMode="never"
         keyboardShouldPersistTaps="handled"
-        bottomOffset={10}
+        bottomOffset={22}
         contentContainerStyle={styles.content}
         disableScrollOnKeyboardHide={true}>
         <WelcomeSvg height={128} style={styles.welcomeImg} />
@@ -168,11 +171,7 @@ const Registration = ({navigation}: AppStackScreenProps<'Registration'>) => {
           onPress={() => {
             navigation.navigate(AppRouts.Login);
           }}>
-          <Text
-            style={[
-              styles.footerText,
-              {color: colors.text, marginBottom: bottomSpace},
-            ]}>
+          <Text style={[styles.footerText, {color: colors.text}]}>
             Already have an account?{' '}
             <Text style={[styles.createAccountText, {color: colors.tint}]}>
               Login.

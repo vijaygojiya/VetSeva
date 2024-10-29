@@ -13,8 +13,7 @@ import Animated, {
   useScrollViewOffset,
 } from 'react-native-reanimated';
 import {AppButton} from '@/components';
-import {useMMKVBoolean} from 'react-native-mmkv';
-import {storageKeys} from '@/utils';
+import Routes from '@/router/router';
 
 const data = [
   {
@@ -45,15 +44,14 @@ const data = [
 ];
 const screenWidth = Dimensions.get('screen').width;
 
-const Onboarding = ({}: AppStackScreenProps<'Onboarding'>) => {
-  const [_, setIsGetStarted] = useMMKVBoolean(storageKeys.isGetStarted);
+const Onboarding = ({navigation}: AppStackScreenProps<'Onboarding'>) => {
   const animatedRef = useAnimatedRef<Animated.ScrollView>();
   const scrollOffset = useScrollViewOffset(animatedRef);
 
   const {colors} = useAppTheme();
 
   const handleGetStarted = () => {
-    setIsGetStarted(true);
+    navigation.replace(Routes.Login);
   };
 
   return (
