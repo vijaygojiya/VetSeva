@@ -32,6 +32,7 @@ const HomeScreen = ({}: TabScreensProps<'Home'>) => {
   return (
     <SafeAreaView style={styles.container} edges={['top', 'left', 'right']}>
       <FlatList
+        ref={ref}
         refreshControl={
           <RefreshControl
             refreshing={refreshing}
@@ -41,7 +42,6 @@ const HomeScreen = ({}: TabScreensProps<'Home'>) => {
           />
         }
         ListHeaderComponent={renderListHeader}
-        ref={ref}
         showsVerticalScrollIndicator={false}
         overScrollMode="never"
         data={doctors}

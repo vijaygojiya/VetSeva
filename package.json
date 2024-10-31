@@ -11,9 +11,11 @@
     "build:release:android": "cd android && ./gradlew assembleRelease -DtestBuildType=release -Dorg.gradle.jvmargs=-Xmx4g"
   },
   "dependencies": {
+    "@notifee/react-native": "^9.1.2",
     "@os-team/i18next-react-native-language-detector": "^1.0.34",
     "@react-native-firebase/app": "^21.2.0",
     "@react-native-firebase/auth": "^21.2.0",
+    "@react-native-firebase/messaging": "^21.2.0",
     "@react-navigation/bottom-tabs": "^6.6.1",
     "@react-navigation/native": "^6.1.18",
     "@react-navigation/native-stack": "^6.11.0",

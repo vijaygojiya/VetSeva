@@ -16,12 +16,15 @@ import {useMMKVBoolean} from 'react-native-mmkv';
 import {storage, storageKeys} from '@/utils';
 import TabNavigator from './TabNavigator';
 import Routes from './router';
+import {useSetupNotification} from '@/hooks';
 
 const AppStack = createNativeStackNavigator<AppStackParamsList>();
 
 const MainAppNavigation = () => {
   const [isGetStarted] = useMMKVBoolean(storageKeys.isGetStarted, storage);
   const isRestoring = useIsRestoring();
+
+  useSetupNotification();
 
   const {data: isLoggedIn} = useQuery({
     queryKey: ['userDetail'],
