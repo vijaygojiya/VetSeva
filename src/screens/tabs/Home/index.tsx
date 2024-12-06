@@ -1,12 +1,19 @@
-import {FlatList, ListRenderItem, RefreshControl} from 'react-native';
-import React, {useCallback, useRef, useState} from 'react';
+import {
+  ActivityIndicator,
+  FlatList,
+  ListRenderItem,
+  RefreshControl,
+} from 'react-native';
+import React, {useCallback, useRef} from 'react';
 import {TabScreensProps} from '@/types/navigation';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {useScrollToTop} from '@react-navigation/native';
 import styles from './styles';
 import {DoctorListHeader, DoctorListItem} from '@/components';
 import {IDoctor} from '@/types/appTypes';
-import {useAppTheme} from '@/hooks';
+import {useAppTheme, useRefreshByUser} from '@/hooks';
+import {randomUserImage} from '@/utils';
+import {useQuery} from '@tanstack/react-query';
 
 const renderItem: ListRenderItem<IDoctor> = ({item}) => {
   return <DoctorListItem {...item} />;
@@ -15,36 +22,40 @@ const renderListHeader = () => {
   return <DoctorListHeader />;
 };
 const HomeScreen = ({}: TabScreensProps<'Home'>) => {
-  const [refreshing, setRefreshing] = useState(false);
   const ref = useRef<FlatList | null>(null);
 
   const {colors} = useAppTheme();
 
+  const {data, refetch, isLoading} = useQuery({
+    queryKey: ['doctor-list'],
+    queryFn: getDoctor,
+  });
+
+  const {isRefetchingByUser, refetchByUser} = useRefreshByUser(refetch);
+
   useScrollToTop(ref);
 
-  const onRefresh = useCallback(() => {
-    setRefreshing(true);
-    setTimeout(() => {
-      setRefreshing(false);
-    }, 2e3);
-  }, []);
-
+  const renderListEmpty = useCallback(() => {
+    if (isLoading) {
+      return <ActivityIndicator color={colors.primary500} />;
+    }
+  }, [colors.primary500, isLoading]);
   return (
     <SafeAreaView style={styles.container} edges={['top', 'left', 'right']}>
       <FlatList
         ref={ref}
         refreshControl={
           <RefreshControl
-            refreshing={refreshing}
-            progressViewOffset={26}
+            refreshing={isRefetchingByUser}
             colors={[colors.primary500]}
-            onRefresh={onRefresh}
+            onRefresh={refetchByUser}
           />
         }
         ListHeaderComponent={renderListHeader}
+        ListEmptyComponent={renderListEmpty}
         showsVerticalScrollIndicator={false}
         overScrollMode="never"
-        data={doctors}
+        data={data}
         renderItem={renderItem}
         contentContainerStyle={styles.listContentContainer}
       />
@@ -54,10 +65,18 @@ const HomeScreen = ({}: TabScreensProps<'Home'>) => {
 
 export default HomeScreen;
 
+const getDoctor = () => {
+  return new Promise<Array<IDoctor>>(res => {
+    setTimeout(() => {
+      res(doctors);
+    }, 900);
+  });
+};
+
 export const doctors: IDoctor[] = [
   {
     id: '1',
-    profilePicture: 'https://example.com/doctor1.jpg',
+    profilePicture: randomUserImage,
     name: 'Dr. Rajesh Patel',
     email: 'rajesh.patel@example.com',
     phone: '+91 9876543210',
@@ -65,7 +84,7 @@ export const doctors: IDoctor[] = [
     specialization: 'Livestock',
     licenseNumber: 'GJ123456',
     startDate: new Date('2024-04-15'),
-    location: {name: 'Ahmedabad', latitude: 23.0225, longitude: 72.5714},
+    location: {name: 'Ahmedabad, Gujarat', latitude: 23.0225, longitude: 72.5714},
     address: '123 Veterinary Lane, Ahmedabad, Gujarat',
     rating: 4.8,
     totalReviews: 120,
@@ -75,7 +94,7 @@ export const doctors: IDoctor[] = [
   },
   {
     id: '2',
-    profilePicture: 'https://example.com/doctor2.jpg',
+    profilePicture: randomUserImage,
     name: 'Dr. Kavita Joshi',
     email: 'kavita.joshi@example.com',
     phone: '+91 9123456780',
@@ -83,7 +102,7 @@ export const doctors: IDoctor[] = [
     specialization: 'Small Animals',
     licenseNumber: 'GJ654321',
     startDate: new Date('2015-06-20'),
-    location: {name: 'Surat', latitude: 21.1702, longitude: 72.8311},
+    location: {name: 'Surat, Gujarat', latitude: 21.1702, longitude: 72.8311},
     address: '45 Pet Care St, Surat, Gujarat',
     rating: 4.7,
     totalReviews: 98,
@@ -93,7 +112,7 @@ export const doctors: IDoctor[] = [
   },
   {
     id: '3',
-    profilePicture: 'https://example.com/doctor3.jpg',
+    profilePicture: randomUserImage,
     name: 'Dr. Manish Desai',
     email: 'manish.desai@example.com',
     phone: '+91 9823456781',
@@ -101,7 +120,7 @@ export const doctors: IDoctor[] = [
     specialization: 'Dairy Cattle',
     licenseNumber: 'GJ789012',
     startDate: new Date('2008-09-10'),
-    location: {name: 'Vadodara', latitude: 22.3072, longitude: 73.1812},
+    location: {name: 'Vadodara, Gujarat', latitude: 22.3072, longitude: 73.1812},
     address: '78 Dairy Lane, Vadodara, Gujarat',
     rating: 4.5,
     totalReviews: 85,
@@ -111,7 +130,7 @@ export const doctors: IDoctor[] = [
   },
   {
     id: '4',
-    profilePicture: 'https://example.com/doctor4.jpg',
+    profilePicture: randomUserImage,
     name: 'Dr. Sneha Shah',
     email: 'sneha.shah@example.com',
     phone: '+91 9934567892',
@@ -119,7 +138,7 @@ export const doctors: IDoctor[] = [
     specialization: 'Poultry',
     licenseNumber: 'GJ234567',
     startDate: new Date('2016-11-05'),
-    location: {name: 'Rajkot', latitude: 22.3039, longitude: 70.8022},
+    location: {name: 'Rajkot, Gujarat', latitude: 22.3039, longitude: 70.8022},
     address: '55 Poultry Drive, Rajkot, Gujarat',
     rating: 4.6,
     totalReviews: 105,
@@ -129,7 +148,7 @@ export const doctors: IDoctor[] = [
   },
   {
     id: '5',
-    profilePicture: 'https://example.com/doctor5.jpg',
+    profilePicture: randomUserImage,
     name: 'Dr. Prakash Mehta',
     email: 'prakash.mehta@example.com',
     phone: '+91 9124567890',
@@ -137,7 +156,7 @@ export const doctors: IDoctor[] = [
     specialization: 'Surgery',
     licenseNumber: 'GJ345678',
     startDate: new Date('2009-01-15'),
-    location: {name: 'Bhavnagar', latitude: 21.7645, longitude: 72.1519},
+    location: {name: 'Bhavnagar, Gujarat', latitude: 21.7645, longitude: 72.1519},
     address: '22 Vet Surgery Rd, Bhavnagar, Gujarat',
     rating: 4.9,
     totalReviews: 150,
@@ -147,7 +166,7 @@ export const doctors: IDoctor[] = [
   },
   {
     id: '6',
-    profilePicture: 'https://example.com/doctor6.jpg',
+    profilePicture: randomUserImage,
     name: 'Dr. Anjali Patel',
     email: 'anjali.patel@example.com',
     phone: '+91 9934876541',
@@ -155,7 +174,7 @@ export const doctors: IDoctor[] = [
     specialization: 'Community Livestock',
     licenseNumber: 'GJ456789',
     startDate: new Date('2013-03-18'),
-    location: {name: 'Jamnagar', latitude: 22.4707, longitude: 70.0577},
+    location: {name: 'Jamnagar, Gujarat', latitude: 22.4707, longitude: 70.0577},
     address: '12 Animal Care Rd, Jamnagar, Gujarat',
     rating: 4.7,
     totalReviews: 76,
@@ -165,7 +184,7 @@ export const doctors: IDoctor[] = [
   },
   {
     id: '7',
-    profilePicture: 'https://example.com/doctor7.jpg',
+    profilePicture: randomUserImage,
     name: 'Dr. Vipul Chauhan',
     email: 'vipul.chauhan@example.com',
     phone: '+91 9987654321',
@@ -173,7 +192,7 @@ export const doctors: IDoctor[] = [
     specialization: 'Veterinary Medicine',
     licenseNumber: 'GJ567890',
     startDate: new Date('2011-05-22'),
-    location: {name: 'Anand', latitude: 22.5645, longitude: 72.9289},
+    location: {name: 'Anand, Gujarat', latitude: 22.5645, longitude: 72.9289},
     address: '44 Vet Med Ave, Anand, Gujarat',
     rating: 4.3,
     totalReviews: 65,
@@ -183,7 +202,7 @@ export const doctors: IDoctor[] = [
   },
   {
     id: '8',
-    profilePicture: 'https://example.com/doctor8.jpg',
+    profilePicture: randomUserImage,
     name: 'Dr. Mitesh Joshi',
     email: 'mitesh.joshi@example.com',
     phone: '+91 9898765432',
@@ -191,7 +210,7 @@ export const doctors: IDoctor[] = [
     specialization: 'Preventive Care',
     licenseNumber: 'GJ678901',
     startDate: new Date('2014-08-10'),
-    location: {name: 'Mehsana', latitude: 23.588, longitude: 72.3693},
+    location: {name: 'Mehsana, Gujarat', latitude: 23.588, longitude: 72.3693},
     address: '77 Preventive St, Mehsana, Gujarat',
     rating: 4.2,
     totalReviews: 45,
@@ -201,7 +220,7 @@ export const doctors: IDoctor[] = [
   },
   {
     id: '9',
-    profilePicture: 'https://example.com/doctor9.jpg',
+    profilePicture: randomUserImage,
     name: 'Dr. Komal Trivedi',
     email: 'komal.trivedi@example.com',
     phone: '+91 9876547890',
@@ -209,7 +228,7 @@ export const doctors: IDoctor[] = [
     specialization: 'Reproductive Health',
     licenseNumber: 'GJ789012',
     startDate: new Date('2007-12-12'),
-    location: {name: 'Bhuj', latitude: 23.2419, longitude: 69.6669},
+    location: {name: 'Bhuj, Gujarat', latitude: 23.2419, longitude: 69.6669},
     address: '33 Repro Care Blvd, Bhuj, Gujarat',
     rating: 4.8,
     totalReviews: 95,
@@ -219,7 +238,7 @@ export const doctors: IDoctor[] = [
   },
   {
     id: '10',
-    profilePicture: 'https://example.com/doctor10.jpg',
+    profilePicture: randomUserImage,
     name: 'Dr. Nishant Rathod',
     email: 'nishant.rathod@example.com',
     phone: '+91 9865432109',
@@ -227,7 +246,7 @@ export const doctors: IDoctor[] = [
     specialization: 'Herd Health',
     licenseNumber: 'GJ890123',
     startDate: new Date('2012-09-15'),
-    location: {name: 'Nadiad', latitude: 22.6939, longitude: 72.8611},
+    location: {name: 'Nadiad, Gujarat', latitude: 22.6939, longitude: 72.8611},
     address: '66 Herd St, Nadiad, Gujarat',
     rating: 4.6,
     totalReviews: 88,
@@ -237,7 +256,7 @@ export const doctors: IDoctor[] = [
   },
   {
     id: '11',
-    profilePicture: 'https://example.com/doctor11.jpg',
+    profilePicture: randomUserImage,
     name: 'Dr. Suresh Kothari',
     email: 'suresh.kothari@example.com',
     phone: '+91 9845123456',
@@ -245,7 +264,7 @@ export const doctors: IDoctor[] = [
     specialization: 'Infectious Diseases',
     licenseNumber: 'GJ901234',
     startDate: new Date('2016-04-20'),
-    location: {name: 'Porbandar', latitude: 21.6417, longitude: 69.6293},
+    location: {name: 'Porbandar, Gujarat', latitude: 21.6417, longitude: 69.6293},
     address: '24 Health Ave, Porbandar, Gujarat',
     rating: 4.5,
     totalReviews: 60,
@@ -255,7 +274,7 @@ export const doctors: IDoctor[] = [
   },
   {
     id: '12',
-    profilePicture: 'https://example.com/doctor12.jpg',
+    profilePicture: randomUserImage,
     name: 'Dr. Rina Modi',
     email: 'rina.modi@example.com',
     phone: '+91 9932154786',
@@ -263,7 +282,7 @@ export const doctors: IDoctor[] = [
     specialization: 'Nutrition',
     licenseNumber: 'GJ012345',
     startDate: new Date('2014-11-25'),
-    location: {name: 'Junagadh', latitude: 21.5222, longitude: 70.4579},
+    location: {name: 'Junagadh, Gujarat', latitude: 21.5222, longitude: 70.4579},
     address: '12 Nutrition Rd, Junagadh, Gujarat',
     rating: 4.7,
     totalReviews: 80,
@@ -273,7 +292,7 @@ export const doctors: IDoctor[] = [
   },
   {
     id: '13',
-    profilePicture: 'https://example.com/doctor13.jpg',
+    profilePicture: randomUserImage,
     name: 'Dr. Dinesh Bhatia',
     email: 'dinesh.bhatia@example.com',
     phone: '+91 9898541236',
@@ -281,7 +300,7 @@ export const doctors: IDoctor[] = [
     specialization: 'Rural Veterinary Services',
     licenseNumber: 'GJ234567',
     startDate: new Date('2012-02-14'),
-    location: {name: 'Patan', latitude: 23.85, longitude: 72.1},
+    location: {name: 'Patan, Gujarat', latitude: 23.85, longitude: 72.1},
     address: '34 Veterinary St, Patan, Gujarat',
     rating: 4.4,
     totalReviews: 53,
@@ -291,7 +310,7 @@ export const doctors: IDoctor[] = [
   },
   {
     id: '14',
-    profilePicture: 'https://example.com/doctor14.jpg',
+    profilePicture: randomUserImage,
     name: 'Dr. Anita Mehta',
     email: 'anita.mehta@example.com',
     phone: '+91 9867452319',
@@ -299,7 +318,7 @@ export const doctors: IDoctor[] = [
     specialization: 'Dermatology',
     licenseNumber: 'GJ345678',
     startDate: new Date('2009-07-18'),
-    location: {name: 'Bhuj', latitude: 23.2419, longitude: 69.6669},
+    location: {name: 'Bhuj, Gujarat', latitude: 23.2419, longitude: 69.6669},
     address: '56 Skin Care Ln, Bhuj, Gujarat',
     rating: 4.6,
     totalReviews: 74,
@@ -309,7 +328,7 @@ export const doctors: IDoctor[] = [
   },
   {
     id: '15',
-    profilePicture: 'https://example.com/doctor15.jpg',
+    profilePicture: randomUserImage,
     name: 'Dr. Bhavesh Solanki',
     email: 'bhavesh.solanki@example.com',
     phone: '+91 9812345678',
@@ -317,7 +336,7 @@ export const doctors: IDoctor[] = [
     specialization: 'Advanced Surgery',
     licenseNumber: 'GJ456789',
     startDate: new Date('2018-10-30'),
-    location: {name: 'Gandhinagar', latitude: 23.2156, longitude: 72.6369},
+    location: {name: 'Gandhinagar, Gujarat', latitude: 23.2156, longitude: 72.6369},
     address: '99 Surgical Care Ave, Gandhinagar, Gujarat',
     rating: 4.9,
     totalReviews: 90,
@@ -327,7 +346,7 @@ export const doctors: IDoctor[] = [
   },
   {
     id: '16',
-    profilePicture: 'https://example.com/doctor16.jpg',
+    profilePicture: randomUserImage,
     name: 'Dr. Hiral Shah',
     email: 'hiral.shah@example.com',
     phone: '+91 9876543210',
@@ -335,7 +354,7 @@ export const doctors: IDoctor[] = [
     specialization: 'Animal Behavior',
     licenseNumber: 'GJ567890',
     startDate: new Date('2015-01-22'),
-    location: {name: 'Amreli', latitude: 21.6032, longitude: 71.2221},
+    location: {name: 'Amreli, Gujarat', latitude: 21.6032, longitude: 71.2221},
     address: '101 Animal Behavior St, Amreli, Gujarat',
     rating: 4.8,
     totalReviews: 67,
@@ -345,7 +364,7 @@ export const doctors: IDoctor[] = [
   },
   {
     id: '17',
-    profilePicture: 'https://example.com/doctor17.jpg',
+    profilePicture: randomUserImage,
     name: 'Dr. Rakesh Chauhan',
     email: 'rakesh.chauhan@example.com',
     phone: '+91 9845123458',
@@ -353,7 +372,7 @@ export const doctors: IDoctor[] = [
     specialization: 'Orthopedics',
     licenseNumber: 'GJ678901',
     startDate: new Date('2012-03-16'),
-    location: {name: 'Bhuj', latitude: 23.2419, longitude: 69.6669},
+    location: {name: 'Bhuj, Gujarat', latitude: 23.2419, longitude: 69.6669},
     address: '102 Ortho Care Ave, Bhuj, Gujarat',
     rating: 4.5,
     totalReviews: 75,
@@ -363,7 +382,7 @@ export const doctors: IDoctor[] = [
   },
   {
     id: '18',
-    profilePicture: 'https://example.com/doctor18.jpg',
+    profilePicture: randomUserImage,
     name: 'Dr. Renu Bhatt',
     email: 'renu.bhatt@example.com',
     phone: '+91 9954321876',
@@ -371,7 +390,7 @@ export const doctors: IDoctor[] = [
     specialization: 'Neonatal Care',
     licenseNumber: 'GJ789012',
     startDate: new Date('2014-12-09'),
-    location: {name: 'Dahod', latitude: 22.8324, longitude: 74.2595},
+    location: {name: 'Dahod, Gujarat', latitude: 22.8324, longitude: 74.2595},
     address: '103 Newborn Care Blvd, Dahod, Gujarat',
     rating: 4.3,
     totalReviews: 62,
@@ -381,7 +400,7 @@ export const doctors: IDoctor[] = [
   },
   {
     id: '19',
-    profilePicture: 'https://example.com/doctor19.jpg',
+    profilePicture: randomUserImage,
     name: 'Dr. Amit Trivedi',
     email: 'amit.trivedi@example.com',
     phone: '+91 9823546710',
@@ -389,7 +408,7 @@ export const doctors: IDoctor[] = [
     specialization: 'Emergency Medicine',
     licenseNumber: 'GJ890123',
     startDate: new Date('2017-05-04'),
-    location: {name: 'Kutch', latitude: 23.7333, longitude: 69.3333},
+    location: {name: 'Kutch, Gujarat', latitude: 23.7333, longitude: 69.3333},
     address: '104 Emergency Care Ln, Kutch, Gujarat',
     rating: 4.7,
     totalReviews: 84,
@@ -399,7 +418,7 @@ export const doctors: IDoctor[] = [
   },
   {
     id: '20',
-    profilePicture: 'https://example.com/doctor20.jpg',
+    profilePicture: randomUserImage,
     name: 'Dr. Nisha Patel',
     email: 'nisha.patel@example.com',
     phone: '+91 9832165487',
@@ -407,7 +426,7 @@ export const doctors: IDoctor[] = [
     specialization: 'Diagnostic Imaging',
     licenseNumber: 'GJ012345',
     startDate: new Date('2019-07-11'),
-    location: {name: 'Morbi', latitude: 22.8173, longitude: 70.8378},
+    location: {name: 'Morbi, Gujarat', latitude: 22.8173, longitude: 70.8378},
     address: '105 Diagnostic Imaging Blvd, Morbi, Gujarat',
     rating: 4.6,
     totalReviews: 58,

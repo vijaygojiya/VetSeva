@@ -24,54 +24,94 @@ const Tab = createBottomTabNavigator<TabParamsList>();
 const renderHomeTabIcon = ({
   color,
   size,
+  focused,
 }: {
   focused: boolean;
   color: string;
   size: number;
 }) => {
-  return <HomeSvg stroke={color} height={size} width={size} />;
+  return (
+    <HomeSvg
+      stroke={color}
+      height={size}
+      width={size}
+      strokeWidth={focused ? 2 : 1.5}
+    />
+  );
 };
 const renderProfileTabIcon = ({
   color,
   size,
+  focused,
 }: {
   focused: boolean;
   color: string;
   size: number;
 }) => {
-  return <UserSvg stroke={color} height={size} width={size} />;
+  return (
+    <UserSvg
+      stroke={color}
+      height={size}
+      width={size}
+      strokeWidth={focused ? 2 : 1.5}
+    />
+  );
 };
 const renderExploreTabIcon = ({
   color,
   size,
+  focused,
 }: {
   focused: boolean;
   color: string;
   size: number;
 }) => {
-  return <ExploreSvg stroke={color} height={size} width={size} />;
+  return (
+    <ExploreSvg
+      stroke={color}
+      height={size}
+      width={size}
+      strokeWidth={focused ? 2 : 1.5}
+    />
+  );
 };
 
 const renderAppointmentTabIcon = ({
   color,
   size,
+  focused,
 }: {
   focused: boolean;
   color: string;
   size: number;
 }) => {
-  return <CalendarClockSvg stroke={color} height={size} width={size} />;
+  return (
+    <CalendarClockSvg
+      stroke={color}
+      height={size}
+      width={size}
+      strokeWidth={focused ? 2 : 1.5}
+    />
+  );
 };
 
 const renderNotificationsTabIcon = ({
   color,
   size,
+  focused,
 }: {
   focused: boolean;
   color: string;
   size: number;
 }) => {
-  return <BellSvg stroke={color} height={size} width={size} />;
+  return (
+    <BellSvg
+      stroke={color}
+      height={size}
+      width={size}
+      strokeWidth={focused ? 2 : 1.5}
+    />
+  );
 };
 export default function TabNavigator() {
   const {colors} = useAppTheme();

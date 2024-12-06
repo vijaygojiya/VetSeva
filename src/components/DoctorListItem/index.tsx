@@ -1,4 +1,4 @@
-import {Image, ImageBackground, StyleSheet, Text, View} from 'react-native';
+import {Image, StyleSheet, Text, View} from 'react-native';
 import React, {useMemo} from 'react';
 import {useAppTheme} from '@/hooks';
 import {fonts, fontSize} from '@/styles';
@@ -12,6 +12,7 @@ const DoctorListItem = ({
   rating,
   location,
   totalReviews,
+  profilePicture,
   startDate,
 }: IDoctor) => {
   const {colors} = useAppTheme();
@@ -40,6 +41,7 @@ const DoctorListItem = ({
   return (
     <View style={[styles.card, {backgroundColor: colors.neutral100}]}>
       <Image
+        source={{uri: profilePicture}}
         style={[styles.doctorAvatar, {backgroundColor: colors.neutral500}]}
       />
 
@@ -73,10 +75,10 @@ const DoctorListItem = ({
         <Text
           numberOfLines={1}
           style={[styles.location, {color: colors.neutral500}]}>
-          📍 {location.name}, Gujarat
+          📍 {location.name}
         </Text>
       </View>
-      <ShieldCrossSvg stroke={'green'}  strokeWidth={2} />
+      <ShieldCrossSvg stroke={'green'} strokeWidth={2} />
     </View>
   );
 };
@@ -99,6 +101,9 @@ const styles = StyleSheet.create({
     height: 80,
     width: 80,
     borderRadius: 8,
+    boxShadow: [
+      {offsetX: 0, offsetY: 4, blurRadius: 8, color: 'rgba(0,0,0,0.1)'},
+    ],
   },
   infoContainer: {
     flex: 1,

@@ -28,9 +28,7 @@ const MainAppNavigation = () => {
 
   const {data: isLoggedIn} = useQuery({
     queryKey: ['userDetail'],
-    queryFn: async () => {
-      return getCurrentUserInfo();
-    },
+    queryFn: getCurrentUserInfo,
     select: Boolean,
   });
 
